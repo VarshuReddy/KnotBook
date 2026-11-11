@@ -2,6 +2,7 @@ package com.project.knotbook
 
 import com.project.knotbook.api.AuthApi
 import com.project.knotbook.api.DashboardApi
+import com.project.knotbook.api.ProjectApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,8 +32,7 @@ object NetworkModule {
     ): OkHttpClient{
 
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BASIC
-            redactHeader("Authorization")
+            level = HttpLoggingInterceptor.Level.BODY
         }
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
@@ -64,4 +64,8 @@ object NetworkModule {
     fun provideDashboardApi(retrofit: Retrofit): DashboardApi =
         retrofit.create(DashboardApi::class.java)
 
+    @Provides
+    @Singleton
+    fun provideProjectApi(retrofit: Retrofit): ProjectApi =
+        retrofit.create(ProjectApi::class.java)
 }

@@ -1,18 +1,28 @@
 package com.project.knotbook.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.project.knotbook.ui.screens.AddProjectScreen
 import com.project.knotbook.ui.screens.HomeScreen
 import com.project.knotbook.ui.screens.LoginScreen
+import com.project.knotbook.ui.screens.ProjectsScreen
 import com.project.knotbook.ui.screens.RegisterScreen
 import com.project.knotbook.ui.screens.SplashScreen
 
 @Composable
 fun AppNavigation() {
+
     val navController = rememberNavController()
-    NavHost( navController = navController, startDestination = Screen.Splash.route){
+
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Splash.route
+    ) {
+
         composable(Screen.Splash.route) {
             SplashScreen(
                 onContinue = {
@@ -56,8 +66,64 @@ fun AppNavigation() {
         }
 
         composable(Screen.Home.route) {
-            HomeScreen()
+            HomeScreen(
+                onProjectsClick = {
+                    navController.navigate(Screen.Projects.route)
+                },
+                onAddProjectClick = {
+                    navController.navigate(Screen.AddProject.route)
+                },
+                onProjectClick = { projectId ->
+                    navController.navigate(
+                        Screen.ProjectDetails.createRoute(projectId)
+                    )
+                }
+            )
+        }
+
+        composable(Screen.Projects.route) {
+            ProjectsScreen(
+                onHomeClick = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
+                },
+                onAddProjectClick = {
+                    navController.navigate(Screen.AddProject.route)
+                },
+                onProjectClick = { projectId ->
+                    navController.navigate("projectDetails/$projectId")
+                }
+            )
+        }
+
+        composable(Screen.AddProject.route) {
+            AddProjectScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onProjectCreated = { projectId ->
+                    navController.navigate("projectDetails/$projectId") {
+                        popUpTo(Screen.AddProject.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+
+        composable(
+            route = Screen.ProjectDetails.route,
+            arguments = listOf(
+                navArgument("projectId") {
+                    type = NavType.LongType
+                }
+            )
+        ) { backStackEntry ->
+
         }
     }
-
 }

@@ -13,13 +13,20 @@ class AuthInterceptor @Inject constructor(
     private val tokenDataStore: TokenDataStore): Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response{
+
+        val originalRequest = chain.request()
+
+        if (originalRequest.url.encodedPath.startsWith("/api/auth/")) {
+            return chain.proceed(originalRequest)
+        }
+
         val token = runBlocking {
             tokenDataStore.accessToken.first()
         }
 
-        val request = chain.request().newBuilder().apply {
+        val request = originalRequest.newBuilder().apply {
             if (!token.isNullOrBlank()) {
-                addHeader("Authorization", "Bearer $token")
+                header("Authorization", "Bearer $token")
             }
         }.build()
 

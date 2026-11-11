@@ -4,6 +4,8 @@ import com.project.knotbook.repository.AuthRepository
 import com.project.knotbook.repository.AuthRepositoryImpl
 import com.project.knotbook.repository.DashboardRepository
 import com.project.knotbook.repository.DashboardRepositoryImpl
+import com.project.knotbook.repository.ProjectRepository
+import com.project.knotbook.repository.ProjectRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -25,5 +27,11 @@ abstract class RepositoryModule {
     abstract fun bindDashboardRepository(
         impl: DashboardRepositoryImpl
     ): DashboardRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindProjectRepository(
+        impl: ProjectRepositoryImpl
+    ): ProjectRepository
 
 }
