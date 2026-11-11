@@ -6,10 +6,10 @@ import com.project.knotbook.model.LoginRequest
 import com.project.knotbook.model.RegisterRequest
 import com.project.knotbook.model.RegisterResponse
 import com.project.knotbook.utils.TokenDataStore
-import com.project.knotbook.ui.state.UiState
+import com.project.knotbook.viewmodel.UiState
 import jakarta.inject.Inject
 
-class AuthRepositoryImpl @Inject constructor(
+class AuthRepositoryImpl @Inject constructor( // hilt knows how to construct this obj
     private val authApi: AuthApi,
     private val tokenDataStore: TokenDataStore
 ) : AuthRepository{

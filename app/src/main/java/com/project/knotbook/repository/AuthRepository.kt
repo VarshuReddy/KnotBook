@@ -4,7 +4,7 @@ import com.project.knotbook.model.AuthResponse
 import com.project.knotbook.model.LoginRequest
 import com.project.knotbook.model.RegisterRequest
 import com.project.knotbook.model.RegisterResponse
-import com.project.knotbook.ui.state.UiState
+import com.project.knotbook.viewmodel.UiState
 
 interface AuthRepository {
     suspend fun register(

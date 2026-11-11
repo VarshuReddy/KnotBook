@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.project.knotbook.model.LoginRequest
 import com.project.knotbook.model.RegisterRequest
 import com.project.knotbook.repository.AuthRepository
-import com.project.knotbook.ui.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,9 +12,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed interface UiState<out T> {
+    data object Idle : UiState<Nothing>
+    data object Loading : UiState<Nothing>
+    data class Success<T>(val data: T) : UiState<T>
+    data class Error(val message: String) : UiState<Nothing>
+}
+
+
+
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository) : ViewModel(){
+    private val authRepository: AuthRepository // it sees 2 AuthRepo types..so @Binds comes in
+) : ViewModel(){
 
     private val _loginState =
         MutableStateFlow<UiState<Unit>>(UiState.Idle)
@@ -36,7 +45,7 @@ class AuthViewModel @Inject constructor(
                     LoginRequest(email.trim(), password)
                 )
             ) {
-                is UiState.Success -> {
+                is UiState.Success<*> -> {
                     _loginState.value = UiState.Success(Unit)
                 }
 
@@ -62,7 +71,7 @@ class AuthViewModel @Inject constructor(
                     )
                 )
             ) {
-                is UiState.Success -> {
+                is UiState.Success<*> -> {
                     _registerState.value = UiState.Success(Unit)
                 }
 

@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.project.knotbook.ui.theme.Cream
 import com.project.knotbook.ui.theme.HotPink
-import com.project.knotbook.ui.state.UiState
 import com.project.knotbook.viewmodel.AuthViewModel
+import com.project.knotbook.viewmodel.UiState
 
 
 @Composable
