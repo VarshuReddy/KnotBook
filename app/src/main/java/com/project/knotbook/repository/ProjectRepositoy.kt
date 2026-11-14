@@ -1,6 +1,7 @@
 package com.project.knotbook.repository
 
 import com.project.knotbook.model.CreateProjectRequest
+import com.project.knotbook.model.ProjectDetailResponse
 import com.project.knotbook.model.ProjectListResponse
 
 interface ProjectRepository {

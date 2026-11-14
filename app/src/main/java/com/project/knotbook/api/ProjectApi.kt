@@ -1,6 +1,7 @@
 package com.project.knotbook.api
 
 import com.project.knotbook.model.CreateProjectRequest
+import com.project.knotbook.model.ProjectDetailResponse
 import com.project.knotbook.model.ProjectListResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
