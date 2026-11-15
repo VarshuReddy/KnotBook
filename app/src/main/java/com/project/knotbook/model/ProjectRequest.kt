@@ -20,3 +20,7 @@ data class CreateProjectRequest(
     val yarns: List<YarnRequest>,
     val hooks: List<HookRequest>
 )
+
+data class AddTimeRequest(
+    val minutes: Long
+)

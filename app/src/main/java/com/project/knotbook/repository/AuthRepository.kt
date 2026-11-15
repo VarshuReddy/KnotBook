@@ -14,4 +14,6 @@ interface AuthRepository {
     suspend fun login(
         request: LoginRequest
     ): UiState<AuthResponse>
+
+    suspend fun refreshSession(): Boolean
 }

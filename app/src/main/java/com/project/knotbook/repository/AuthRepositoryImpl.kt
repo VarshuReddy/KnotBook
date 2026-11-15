@@ -3,11 +3,13 @@ package com.project.knotbook.repository
 import com.project.knotbook.api.AuthApi
 import com.project.knotbook.model.AuthResponse
 import com.project.knotbook.model.LoginRequest
+import com.project.knotbook.model.RefreshTokenRequest
 import com.project.knotbook.model.RegisterRequest
 import com.project.knotbook.model.RegisterResponse
 import com.project.knotbook.utils.TokenDataStore
 import com.project.knotbook.viewmodel.UiState
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.first
 
 class AuthRepositoryImpl @Inject constructor( // hilt knows how to construct this obj
     private val authApi: AuthApi,
@@ -68,4 +70,27 @@ class AuthRepositoryImpl @Inject constructor( // hilt knows how to construct thi
         }
     }
 
+
+    override suspend fun refreshSession(): Boolean {
+        return try{
+            val refreshToken = tokenDataStore.refreshToken.first()
+
+            if (refreshToken.isNullOrBlank()) {
+                tokenDataStore.clearTokens()
+                return false
+            }
+
+            val response = authApi.refreshToken(
+                RefreshTokenRequest(refreshToken)
+            )
+            tokenDataStore.saveTokens(
+                accessToken = response.accessToken,
+                refreshToken = response.refreshToken
+            )
+            true
+        }catch (e: Exception) {
+            tokenDataStore.clearTokens()
+            false
+        }
+    }
 }

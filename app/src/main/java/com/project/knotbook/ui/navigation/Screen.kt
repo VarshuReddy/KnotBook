@@ -12,4 +12,10 @@ sealed class Screen(val route: String){
             return "projectDetails/$projectId"
         }
     }
+    data object AddTime : Screen("addTime/{projectId}") {
+        fun createRoute(projectId: Long) = "addTime/$projectId"
+    }
+    data object ProjectPhotos : Screen("projectPhotos/{projectId}") {
+        fun createRoute(projectId: Long) = "projectPhotos/$projectId"
+    }
 }

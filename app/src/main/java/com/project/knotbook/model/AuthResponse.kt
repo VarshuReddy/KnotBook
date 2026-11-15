@@ -16,3 +16,12 @@ data class RegisterResponse(
     val createdAt: String,
     val message: String
 )
+
+data class RefreshTokenRequest(
+    val refreshToken: String
+)
+
+data class RefreshAuthResponse(
+    val accessToken: String,
+    val refreshToken: String
+)

@@ -10,8 +10,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.project.knotbook.ui.screens.AddProjectScreen
+import com.project.knotbook.ui.screens.AddTimeScreen
 import com.project.knotbook.ui.screens.HomeScreen
 import com.project.knotbook.ui.screens.LoginScreen
+import com.project.knotbook.ui.screens.ProjectDetailsScreen
+import com.project.knotbook.ui.screens.ProjectPhotosScreen
 import com.project.knotbook.ui.screens.ProjectsScreen
 import com.project.knotbook.ui.screens.RegisterScreen
 import com.project.knotbook.ui.screens.SplashScreen
@@ -28,16 +31,11 @@ fun AppNavigation() {
 
     if (startDestination == null) {
         SplashScreen(  onContinue = {
-            navController.navigate(Screen.Login.route) {
-                popUpTo(Screen.Splash.route) {
-                    inclusive = true
-                }
-            }
         })
     } else {
         NavHost(
             navController = navController,
-            startDestination = Screen.Splash.route
+            startDestination = startDestination!!
         )
         {
 
@@ -124,12 +122,78 @@ fun AppNavigation() {
             composable(
                 route = Screen.ProjectDetails.route,
                 arguments = listOf(
+                        navArgument("projectId") {
+                            type = NavType.LongType
+                        }
+                )
+            ) { backStackEntry ->
+                val projectId = backStackEntry.arguments?.getLong("projectId") ?: return@composable
+                ProjectDetailsScreen(
+                    projectId = projectId,
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onAddTimeClick = { id ->
+                        navController.navigate(
+                            Screen.AddTime.createRoute(id)
+                        )
+                    },
+                    onPhotosClick = { id ->
+                        navController.navigate(
+                            Screen.ProjectPhotos.createRoute(id)
+                        )
+                    },
+                    onNotesClick = { id ->
+                        // We'll connect the Notes screen next.
+                    },
+                    onEditClick = { id ->
+                        // We'll connect Edit Project next.
+                    }
+                )
+            }
+
+            composable(Screen.AddTime.route,
+                arguments = listOf(navArgument("projectId"){
+                    type = NavType.LongType
+                })){
+                    entry ->
+
+                val projectId =
+                    entry.arguments?.getLong("projectId") ?: return@composable
+
+                AddTimeScreen(
+                    projectId = projectId,
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onTimeSaved = {
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("refreshProject", true)
+
+                        navController.popBackStack()
+                    }
+                )
+            }
+
+            composable(
+                route = Screen.ProjectPhotos.route,
+                arguments = listOf(
                     navArgument("projectId") {
                         type = NavType.LongType
                     }
                 )
-            ) { backStackEntry ->
+            ) { entry ->
 
+                val projectId =
+                    entry.arguments?.getLong("projectId") ?: return@composable
+
+                ProjectPhotosScreen(
+                    projectId = projectId,
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
             }
         }
     }

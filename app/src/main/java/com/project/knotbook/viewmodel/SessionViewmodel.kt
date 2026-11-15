@@ -2,6 +2,8 @@ package com.project.knotbook.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.project.knotbook.repository.AuthRepository
+import com.project.knotbook.ui.navigation.Screen
 import com.project.knotbook.utils.TokenDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -12,6 +14,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class SessionViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
     private val tokenDataStore: TokenDataStore
 ) : ViewModel() {
 
@@ -26,17 +29,22 @@ class SessionViewModel @Inject constructor(
 
     private fun checkSession() {
         viewModelScope.launch {
-            val accessToken = tokenDataStore.accessToken.first()
             val refreshToken = tokenDataStore.refreshToken.first()
 
+            if (refreshToken.isNullOrBlank()) {
+                tokenDataStore.clearTokens()
+                _startDestination.value = Screen.Login.route
+                return@launch
+            }
+            val isSessionValid = authRepository.refreshSession()
+
             _startDestination.value =
-                if (!accessToken.isNullOrBlank() &&
-                    !refreshToken.isNullOrBlank()
-                ) {
-                    "home"
+                if (isSessionValid) {
+                    Screen.Home.route
                 } else {
-                    "login"
+                    Screen.Login.route
                 }
+
         }
     }
 }

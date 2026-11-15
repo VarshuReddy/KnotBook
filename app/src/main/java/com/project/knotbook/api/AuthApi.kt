@@ -2,6 +2,8 @@ package com.project.knotbook.api
 
 import com.project.knotbook.model.AuthResponse
 import com.project.knotbook.model.LoginRequest
+import com.project.knotbook.model.RefreshAuthResponse
+import com.project.knotbook.model.RefreshTokenRequest
 import com.project.knotbook.model.RegisterRequest
 import com.project.knotbook.model.RegisterResponse
 import retrofit2.Response
@@ -19,4 +21,7 @@ interface AuthApi {
     suspend fun login(
         @Body request: LoginRequest
     ): Response<AuthResponse>
+
+    @POST("api/auth/refresh")
+    suspend fun refreshToken(@Body request: RefreshTokenRequest): RefreshAuthResponse
 }

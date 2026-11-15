@@ -85,4 +85,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test)
+
+    implementation("io.coil-kt:coil-compose:2.7.0")
+
 }
