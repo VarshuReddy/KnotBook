@@ -42,6 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -53,10 +54,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.project.knotbook.model.HookResponse
 import com.project.knotbook.model.ProjectDetailResponse
 import com.project.knotbook.model.YarnResponse
+import com.project.knotbook.ui.components.ProjectCoverImage
+import com.project.knotbook.ui.theme.Cocoa
 import com.project.knotbook.ui.theme.Cream
 import com.project.knotbook.viewmodel.ProjectDetailsUiState
 import com.project.knotbook.viewmodel.ProjectDetailsViewModel
@@ -73,6 +79,22 @@ fun ProjectDetailsScreen(
     onEditClick: (Long) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner, projectId) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.loadProject(projectId)
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     LaunchedEffect(projectId) {
         viewModel.loadProject(projectId)
@@ -194,14 +216,18 @@ private fun ProjectHeader(project: ProjectDetailResponse) {
                 .background(Color(0xFFF7DCE8)),
             contentAlignment = Alignment.Center
         ) {
-            Text("🧶", fontSize = 64.sp)
+            ProjectCoverImage(
+                imageUrl = project.photos.find { it-> it.isCover }?.imageUrl,
+                modifier = Modifier.fillMaxWidth(),
+                height = 145.dp
+            )
         }
 
         Text(
             text = project.title,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF493B42)
+            color = Cocoa
         )
 
         Row(
@@ -241,7 +267,7 @@ private fun ProjectStatusChip(status: String) {
         Text(
             text = label,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            color = Color(0xFF493B42),
+            color = Cocoa,
             style = MaterialTheme.typography.labelMedium
         )
     }
@@ -262,7 +288,7 @@ private fun ProjectInfoCard(project: ProjectDetailResponse) {
                 "About this project",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                color = Color(0xFF493B42)
+                color = Cocoa
             )
 
             project.description?.takeIf { it.isNotBlank() }?.let {
@@ -299,13 +325,13 @@ private fun ProjectTimeCard(
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     "Crafting time",
-                    color = Color(0xFF493B42),
+                    color = Cocoa,
                     fontWeight = FontWeight.SemiBold
                 )
 
                 Text(
                     formatCraftingTime(totalMinutes),
-                    color = Color(0xFF493B42),
+                    color = Cocoa,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -332,7 +358,7 @@ private fun ProjectYarnSection(yarns: List<YarnResponse>) {
             "Yarns",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF493B42)
+            color = Cocoa
         )
 
         if (yarns.isEmpty()) {
@@ -366,7 +392,7 @@ private fun ProjectYarnSection(yarns: List<YarnResponse>) {
                             Text(
                                 yarn.color,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFF493B42)
+                                color = Cocoa
                             )
                             Text(
                                 "${yarn.weight} • ${yarn.type}",
@@ -388,7 +414,7 @@ private fun ProjectHookSection(hooks: List<HookResponse>) {
             "Hooks",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF493B42)
+            color = Cocoa
         )
 
         if (hooks.isEmpty()) {
@@ -409,7 +435,7 @@ private fun ProjectHookSection(hooks: List<HookResponse>) {
                                 horizontal = 16.dp,
                                 vertical = 12.dp
                             ),
-                            color = Color(0xFF493B42),
+                            color = Cocoa,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -442,7 +468,7 @@ private fun ProjectActionCard(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(32.dp),
-                tint = Color(0xFF493B42)
+                tint = Cocoa
             )
 
             Spacer(Modifier.width(14.dp))
@@ -451,7 +477,7 @@ private fun ProjectActionCard(
                 Text(
                     title,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF493B42)
+                    color = Cocoa
                 )
                 Text(
                     subtitle,
@@ -463,7 +489,7 @@ private fun ProjectActionCard(
             Icon(
                 Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = null,
-                tint = Color(0xFF493B42)
+                tint = Cocoa
             )
         }
     }
@@ -478,7 +504,7 @@ private fun DetailRow(label: String, value: String) {
         Text(label, color = Color(0xFF887982))
         Text(
             value,
-            color = Color(0xFF493B42),
+            color = Cocoa,
             fontWeight = FontWeight.Medium
         )
     }

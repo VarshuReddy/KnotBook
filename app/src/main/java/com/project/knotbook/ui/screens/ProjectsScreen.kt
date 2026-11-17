@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.project.knotbook.model.ProjectListItemResponse
+import com.project.knotbook.ui.components.ProjectCoverImage
 import com.project.knotbook.ui.theme.Blush
 import com.project.knotbook.ui.theme.ButterYellow
 import com.project.knotbook.ui.theme.Cocoa
@@ -334,15 +335,11 @@ private fun ProjectCard(
         colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(115.dp)
-                    .background(cardColor),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("🧶", style = MaterialTheme.typography.displayMedium)
-            }
+            ProjectCoverImage(
+                imageUrl = project.coverImageUrl,
+                modifier = Modifier.fillMaxWidth(),
+                height = 145.dp
+            )
 
             Column(
                 modifier = Modifier.padding(12.dp),

@@ -22,5 +22,5 @@ data class CreateProjectRequest(
 )
 
 data class AddTimeRequest(
-    val minutes: Long
+    val additionalMinutes: Long
 )

@@ -18,4 +18,7 @@ sealed class Screen(val route: String){
     data object ProjectPhotos : Screen("projectPhotos/{projectId}") {
         fun createRoute(projectId: Long) = "projectPhotos/$projectId"
     }
+    data object ProjectNotes : Screen("projectNotes/{projectId}") {
+        fun createRoute(projectId: Long) = "projectNotes/$projectId"
+    }
 }

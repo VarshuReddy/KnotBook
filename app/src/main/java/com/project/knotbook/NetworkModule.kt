@@ -3,6 +3,8 @@ package com.project.knotbook
 import com.project.knotbook.api.AuthApi
 import com.project.knotbook.api.DashboardApi
 import com.project.knotbook.api.ProjectApi
+import com.project.knotbook.api.RefreshAuthApi
+import com.project.knotbook.utils.TokenAuthenticator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +30,8 @@ object NetworkModule {
     @Provides //When someone requests an OkHttpClient,call this function to create one"
     @Singleton
     fun provideOkHttpClient(
-        authInterceptor: AuthInterceptor
+        authInterceptor: AuthInterceptor,
+        tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient{
 
         val loggingInterceptor = HttpLoggingInterceptor().apply {
@@ -36,6 +39,8 @@ object NetworkModule {
         }
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
+            //OkHttp receives a 401 Unauthorized response, it automatically invokes TokenAuthenticator.authenticate().
+            .authenticator(tokenAuthenticator)
             .addInterceptor(loggingInterceptor)
             .build()
     }
@@ -52,6 +57,23 @@ object NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+
+    // Separate Retrofit for refresh requests without authenticator
+    @Provides
+    @Singleton
+    fun provideRefreshAuthApi(): RefreshAuthApi {
+
+        val refreshClient = OkHttpClient.Builder()
+            .build()
+
+        val refreshRetrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(refreshClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        return refreshRetrofit.create(RefreshAuthApi::class.java)
+    }
 
     @Provides
     @Singleton

@@ -5,10 +5,13 @@ import com.project.knotbook.model.AddTimeRequest
 import com.project.knotbook.model.CreateProjectRequest
 import com.project.knotbook.model.ProjectDetailResponse
 import com.project.knotbook.model.ProjectListResponse
+import com.project.knotbook.model.ProjectNoteRequest
+import com.project.knotbook.model.ProjectNoteResponse
 import com.project.knotbook.model.ProjectPhotoResponse
 import jakarta.inject.Inject
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.HttpException
 
 class ProjectRepositoryImpl @Inject constructor(
     private val projectApi: ProjectApi
@@ -78,4 +81,22 @@ class ProjectRepositoryImpl @Inject constructor(
         projectApi.setCoverPhoto(projectId, photoId)
     }
 
+    override suspend fun getProjectNotes(
+        projectId: Long
+    ): ProjectNoteResponse? {
+        val response = projectApi.getProjectNotes(projectId)
+
+        return when {
+            response.isSuccessful -> response.body()
+            response.code() == 404 -> null
+            else -> throw HttpException(response)
+        }
+    }
+
+    override suspend fun saveProjectNotes(
+        projectId: Long,
+        request: ProjectNoteRequest
+    ): ProjectNoteResponse {
+        return projectApi.saveProjectNotes(projectId, request)
+    }
 }

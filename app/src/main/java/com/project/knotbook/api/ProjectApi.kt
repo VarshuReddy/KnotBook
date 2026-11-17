@@ -4,15 +4,19 @@ import com.project.knotbook.model.AddTimeRequest
 import com.project.knotbook.model.CreateProjectRequest
 import com.project.knotbook.model.ProjectDetailResponse
 import com.project.knotbook.model.ProjectListResponse
+import com.project.knotbook.model.ProjectNoteRequest
+import com.project.knotbook.model.ProjectNoteResponse
 import com.project.knotbook.model.ProjectPhotoResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -69,5 +73,19 @@ interface ProjectApi {
         @Path("projectId") projectId: Long,
         @Path("photoId") photoId: Long
     )
+
+    @GET("api/projects/{projectId}/notes")
+    suspend fun getProjectNotes(
+        @Path("projectId") projectId: Long
+    ): Response<ProjectNoteResponse>
+
+
+    @PUT("api/projects/{projectId}/notes")
+    suspend fun saveProjectNotes(
+        @Path("projectId") projectId: Long,
+        @Body request: ProjectNoteRequest
+    ): ProjectNoteResponse
+
+
 
 }

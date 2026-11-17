@@ -14,6 +14,7 @@ import com.project.knotbook.ui.screens.AddTimeScreen
 import com.project.knotbook.ui.screens.HomeScreen
 import com.project.knotbook.ui.screens.LoginScreen
 import com.project.knotbook.ui.screens.ProjectDetailsScreen
+import com.project.knotbook.ui.screens.ProjectNotesScreen
 import com.project.knotbook.ui.screens.ProjectPhotosScreen
 import com.project.knotbook.ui.screens.ProjectsScreen
 import com.project.knotbook.ui.screens.RegisterScreen
@@ -144,7 +145,9 @@ fun AppNavigation() {
                         )
                     },
                     onNotesClick = { id ->
-                        // We'll connect the Notes screen next.
+                        navController.navigate(
+                            Screen.ProjectNotes.createRoute(id)
+                        )
                     },
                     onEditClick = { id ->
                         // We'll connect Edit Project next.
@@ -189,6 +192,26 @@ fun AppNavigation() {
                     entry.arguments?.getLong("projectId") ?: return@composable
 
                 ProjectPhotosScreen(
+                    projectId = projectId,
+                    onBackClick = {
+
+                        navController.popBackStack()
+                    }
+                )
+            }
+            composable(
+                route = Screen.ProjectNotes.route,
+                arguments = listOf(
+                    navArgument("projectId") {
+                        type = NavType.LongType
+                    }
+                )
+            ) { entry ->
+
+                val projectId =
+                    entry.arguments?.getLong("projectId") ?: return@composable
+
+                ProjectNotesScreen(
                     projectId = projectId,
                     onBackClick = {
                         navController.popBackStack()

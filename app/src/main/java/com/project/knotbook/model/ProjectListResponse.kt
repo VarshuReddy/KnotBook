@@ -21,6 +21,7 @@ data class ProjectDetailResponse(
     val totalTimeMinutes: Long,
     val yarns: List<YarnResponse>,
     val hooks: List<HookResponse>,
+    val photos:List<ProjectPhotoResponse>,
     val createdAt: String,
     val updatedAt: String
 )

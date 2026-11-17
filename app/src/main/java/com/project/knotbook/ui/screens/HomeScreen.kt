@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.project.knotbook.model.DashboardResponse
+import com.project.knotbook.ui.components.ProjectCoverImage
 import com.project.knotbook.ui.theme.Blush
 import com.project.knotbook.ui.theme.ButterYellow
 import com.project.knotbook.ui.theme.Cocoa
@@ -210,6 +211,7 @@ fun DashboardContent(data: DashboardResponse, modifier: Modifier = Modifier,
                                 title = project.title,
                                 status = project.status,
                                 minutes = project.totalTimeMinutes,
+                                url = project.coverImageUrl,
                                 onClick = { onProjectClick(project.id) }
                             )
                         }
@@ -364,6 +366,7 @@ private fun RecentProjectCard(
     title: String,
     status: String,
     minutes: Long,
+    url: String?,
     onClick: () -> Unit
 ) {
     Card(
@@ -377,7 +380,11 @@ private fun RecentProjectCard(
             modifier = Modifier.padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(9.dp)
         ) {
-            Text("🧶", style = MaterialTheme.typography.headlineMedium)
+            ProjectCoverImage(
+                imageUrl = url,
+                modifier = Modifier.fillMaxWidth(),
+                height = 145.dp
+            )
 
             Text(
                 title,
