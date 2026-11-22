@@ -57,4 +57,6 @@ interface ProjectRepository {
         projectId: Long,
         request: ProjectNoteRequest
     ): ProjectNoteResponse
+
+    suspend fun deleteProject(projectId: Long): Result<Unit>
 }

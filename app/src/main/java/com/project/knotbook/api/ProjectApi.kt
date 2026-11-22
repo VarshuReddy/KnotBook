@@ -86,6 +86,9 @@ interface ProjectApi {
         @Body request: ProjectNoteRequest
     ): ProjectNoteResponse
 
-
+    @DELETE("api/projects/{projectId}")
+    suspend fun deleteProject(
+        @Path("projectId") projectId: Long
+    ): Response<Unit>
 
 }

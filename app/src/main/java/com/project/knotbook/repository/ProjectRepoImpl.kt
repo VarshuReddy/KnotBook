@@ -99,4 +99,20 @@ class ProjectRepositoryImpl @Inject constructor(
     ): ProjectNoteResponse {
         return projectApi.saveProjectNotes(projectId, request)
     }
+
+    override suspend fun deleteProject(projectId: Long): Result<Unit> {
+        return try {
+            val response = projectApi.deleteProject(projectId)
+
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(
+                    Exception("Failed to delete project: ${response.code()}")
+                )
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

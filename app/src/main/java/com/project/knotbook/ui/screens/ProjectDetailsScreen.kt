@@ -23,9 +23,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Notes
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -39,12 +40,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,6 +69,7 @@ import com.project.knotbook.model.YarnResponse
 import com.project.knotbook.ui.components.ProjectCoverImage
 import com.project.knotbook.ui.theme.Cocoa
 import com.project.knotbook.ui.theme.Cream
+import com.project.knotbook.viewmodel.DeleteProjectState
 import com.project.knotbook.viewmodel.ProjectDetailsUiState
 import com.project.knotbook.viewmodel.ProjectDetailsViewModel
 
@@ -79,6 +85,10 @@ fun ProjectDetailsScreen(
     onEditClick: (Long) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val deleteState by viewModel.deleteState.collectAsStateWithLifecycle()
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -99,6 +109,22 @@ fun ProjectDetailsScreen(
     LaunchedEffect(projectId) {
         viewModel.loadProject(projectId)
     }
+
+    LaunchedEffect(deleteState) {
+        when (deleteState) {
+            is DeleteProjectState.Success -> {
+                showDeleteDialog = false
+                onBackClick()
+            }
+
+            is DeleteProjectState.Error -> {
+
+            }
+
+            else -> Unit
+        }
+    }
+
     Scaffold(
         containerColor = Cream, topBar = {
             TopAppBar(
@@ -110,16 +136,23 @@ fun ProjectDetailsScreen(
                     )
                 }
             }, actions = {
-                IconButton(onClick = { onEditClick(projectId) }) {
-                    Icon(
-                        imageVector = Icons.Default.Edit, contentDescription = "Edit project"
-                    )
+                    IconButton(
+                        onClick = {
+                            showDeleteDialog = true
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete project",
+                            tint = Color(0xFFF45B82)
+                        )
                 }
             }, colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = Cream
             )
             )
-        }) { padding ->
+        })
+    { padding ->
 
         when (val state = uiState) {
             is ProjectDetailsUiState.Loading -> {
@@ -202,6 +235,67 @@ fun ProjectDetailsScreen(
                 }
             }
         }
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                if (deleteState !is DeleteProjectState.Deleting) {
+                    showDeleteDialog = false
+                    viewModel.resetDeleteState()
+                }
+            },
+            title = {
+                Text("Delete Project?")
+            },
+            text = {
+                Column {
+                    Text(
+                        "Are you sure you want to delete this project? " +
+                                "This project will be removed from your projects list."
+                    )
+
+                    if (deleteState is DeleteProjectState.Error) {
+                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            text = (deleteState as DeleteProjectState.Error).message,
+                            color = Color.Red
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteProject(projectId)
+                    },
+                    enabled = deleteState !is DeleteProjectState.Deleting
+                ) {
+                    if (deleteState is DeleteProjectState.Deleting) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(
+                            "Delete",
+                            color = Color(0xFFF45B82)
+                        )
+                    }
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        viewModel.resetDeleteState()
+                    },
+                    enabled = deleteState !is DeleteProjectState.Deleting
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
 
